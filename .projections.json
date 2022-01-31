@@ -1,0 +1,11 @@
+{
+  "scrap_costco/*.py":{
+    "alternate": "tests/{dirname}/{basename}_test.py",
+    "path": "scrap_costco/**",
+    "type": "src"
+  },
+  "tests/*_test.py":{
+    "alternate": "scrap_costco/{}.py",
+    "path": "scrap_costco/**"
+  }
+}
