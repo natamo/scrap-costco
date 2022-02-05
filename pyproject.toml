@@ -6,9 +6,14 @@ authors = ["Monica Nataly <nata.moonk@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+sbk-scraping = "^0.1.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+
+[[tool.poetry.source]]
+name = "pyseebak"
+url = "http://pypi.srvc.seebak.com.mx"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

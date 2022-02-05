@@ -1,0 +1,35 @@
+parsers:
+- parser_type: HtmlXml
+  parser_id: costco_products
+  srch_expressions:
+  - target_id: product_name
+    expr_type: xpath
+    srchex: .//*[@class="product-name"]/text()
+  - target_id: product_price
+    expr_type: xpath
+    srchex: .//*[@class="product-price-amount"]//span/text()
+  - target_id: product_code
+    expr_type: xpath
+    srchex: .//*[@class="product-code"]//span/text()
+  - target_id: price_offert
+    expr_type: xpath
+    srchex: .//*[@class="you-pay-value"]/text()
+- parser_type: HtmlXml
+  parser_id: departments
+  srch_expressions:
+  - target_id: deptos
+    expr_type: xpath
+    srchex: .//*[@class="topmenu"]/ul/li/a[text()]/@href
+  # - target_id: first_name
+    # srchex: people[?last=='f'].first
+# - parser_type: JSON
+  # parser_id: Third
+  # srch_expressions:
+  # - target_id: title
+    # srchex: ''
+# - parser_type: HtmlXml
+  # parser_id: Fourth
+  # srch_expressions:
+  # - target_id: title
+    # expr_type: xpath
+    # srchex: //*[@id="content_inner"]/article//h1/text()
