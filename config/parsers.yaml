@@ -5,9 +5,18 @@ parsers:
   - target_id: product_name
     expr_type: xpath
     srchex: .//*[@class="product-name"]/text()
+  - target_id: original_price
+    expr_type: xpath
+    srchex: .//*[@class="price-after-discount"]/span[@class="you-pay-value"]/text()
   - target_id: product_price
     expr_type: xpath
     srchex: .//*[@class="product-price-amount"]//span/text()
+  - target_id: discount
+    expr_type: xpath
+    srchex: .//*[@class="discount"]//span//span/text()
+  - target_id: final_price
+    expr_type: xpath
+    srchex: .//*[@class="price-after-discount"]/span[@class="you-pay-value"]/text()
   - target_id: product_code
     expr_type: xpath
     srchex: .//*[@class="product-code"]//span/text()
@@ -33,3 +42,5 @@ parsers:
   # - target_id: title
     # expr_type: xpath
     # srchex: //*[@id="content_inner"]/article//h1/text()
+    #
+    #

@@ -1,28 +1,41 @@
 from scrapy.spiders import SitemapSpider
 from sbk_scraping.parser.factories import ParserFactory
 from sbk_scraping.utils import load_config_file
-#  from scrapy.crawler import CrawlerProcess
 import scrapy
+#  from scrapy.crawler import CrawlerProcess
+from scrap_costco.utils import get_logger
+
+
+logger = get_logger(__name__)
 
 
 class DeptosSpider(scrapy.Spider):
     name = 'deptos'
     start_urls = ['https://www.costco.com.mx']
 
+    def __init__(self, *args, **kwargs):
+        super(DeptosSpider, self).__init__(*args, **kwargs)
+
+        self.factory = ParserFactory.build_from_config(
+            load_config_file('parsers.yaml')
+        )
+
+        self.parser = self.factory.build_parser(
+            parser_id='departments'
+        )
+
     def parse(self, response):
-        factory = ParserFactory.build_from_config(
-            load_config_file('parsers.yaml'))
-        parser = factory.build_parser(
-            data=response.text, parser_id="departments")
-        departments = parser.parse()
+        deptos_dict = self.parser.parse(data=response.text)
+        deptos_list = deptos_dict["deptos"]
         departments_clean = []
 
-        for depto in departments['deptos']:
+        for depto in deptos_list:
             no_url = "javascript:void(0)"
             if (str(depto) != no_url):
                 departments_clean.append(depto)
-
-        print(departments_clean)
+                print(depto)
+        print(len(departments_clean))
+        #  print(departments_clean)
 
 
 class DeptosMapSpider(SitemapSpider):
@@ -36,16 +49,15 @@ class DeptosMapSpider(SitemapSpider):
     url_list_2 = []
     sitemap_follow = ['/sitemap_mexico_category',
                       '/sitemap_mexico_categorylanding']
-    #  categorylanding -> Mas General
 
     def department(self, response):
         self.url_list.append(response.url)
-        print('LA URL DEL DEPTO ES: ', response.url)
+        logger.info('LA URL DEL DEPTO ES: ', response.url)
         print(len(self.url_list))
 
     def department_landing(self, response):
         self.url_list_2.append(response.url)
-        print('URL LANDING DEPTO: ', response.url)
+        logger.info('URL LANDING DEPTO: ', response.url)
         print(len(self.url_list_2))
 
 
@@ -56,12 +68,11 @@ class UrlsProductSpider(SitemapSpider):
         ('/Joyeria-y-Relojes/Aretes/Aretes-de-Perlas/', 'urls_products')
     ]
     sitemap_follow = ['/sitemap_mexico_product']
-
     url_list = []
 
     def urls_products(self, response):
         self.url_list.append(response.url)
-        #  print('LA URL DEL PRODUCTO ES: ', response.url)
+        logger.info('LA URL DEL PRODUCTO ES: ', response.url)
         print(len(self.url_list))
 
 
@@ -72,21 +83,32 @@ class ProductInfoSpider(SitemapSpider):
         ('/Joyeria-y-Relojes/Anillos/Anillos-de-Oro/', 'products_info'),
     ]
     sitemap_follow = ['/sitemap_mexico_product']
- 
-    def __init__(self, *a, **kw):
-        super(ProductInfoSpider, self).__init__(*a, **kw)
-        self.factory = ParserFactory.build_from_config(load_config_file('parsers.yaml'))
-        self.html_parser = self.factory.build_parser(parser_id="costco_products")
 
-    #  products_list = []
-    #  self.factory = ParserFactory.build_from_config(load_config_file('parsers.yaml'))
+    def __init__(self, *args, **kwargs):
+        super(ProductInfoSpider, self).__init__(*args, **kwargs)
+
+        self.factory = ParserFactory.build_from_config(
+            load_config_file('parsers.yaml')
+        )
+
+        self.parser = self.factory.build_parser(
+            parser_id='costco_products'
+        )
 
     def products_info(self, response):
-        product = self.html_parser.parse(data=response.text)
-        self.products_list.append(product)
+        products_list = []
+        product = self.parser.parse(data=response.text)
+        products_list.append(product)
         print(product)
-        print(len(self.products_list))
+        print(len(products_list))
 
+
+# ·········································································
+
+#  deptos
+#  map_depto
+#  products
+#  url_depto
 
 #  process = CrawlerProcess()
 #  process.crawl(UrlsProductSpider)
