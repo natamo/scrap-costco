@@ -4,13 +4,17 @@ parsers:
   srch_expressions:
   - target_id: product_name
     expr_type: xpath
-    srchex: .//*[@class="product-name"]/text()
+    srchex: .//*[@class="product-title-container hidden-md hidden-lg visible-tablet-landscape col-xs-12 top-title"]/h1[@class="product-name"]//text()
+    # srchex: .//*[@class="product-name"]/text()
+  - target_id: product_price
+    expr_type: xpath
+    srchex: .//*[@class="price-original"]/span[@class="product-price-amount"]/span//text()
   - target_id: original_price
     expr_type: xpath
     srchex: .//*[@class="price-after-discount"]/span[@class="you-pay-value"]/text()
-  - target_id: product_price
-    expr_type: xpath
-    srchex: .//*[@class="product-price-amount"]//span/text()
+  # - target_id: product_price_list
+    # expr_type: xpath
+    # srchex: .//*[@class="product-price-amount"]//span/text()
   - target_id: discount
     expr_type: xpath
     srchex: .//*[@class="discount"]//span//span/text()
@@ -19,16 +23,40 @@ parsers:
     srchex: .//*[@class="price-after-discount"]/span[@class="you-pay-value"]/text()
   - target_id: product_code
     expr_type: xpath
-    srchex: .//*[@class="product-code"]//span/text()
+    srchex: .//*[@class="product-title-container hidden-md hidden-lg visible-tablet-landscape col-xs-12 top-title"]/p[@class="product-code"]//span/text()
   - target_id: price_offert
     expr_type: xpath
     srchex: .//*[@class="you-pay-value"]/text()
+  - target_id: short_description
+    expr_type: xpath
+    srchex: .//*[@class="product-information"]//text()
+  - target_id: box_description
+    expr_type: xpath
+    srchex: .//*[@class="product-details-content-wrapper"]//p//text()
+  - target_id: box_table_descript
+    expr_type: xpath
+    srchex: .//*[@class="product-details-content-wrapper"]/ul/li//text()
+  # - target_id: info
+    # expr_type: css
+    # srchex:  table, attrib, attrib-val
 - parser_type: HtmlXml
   parser_id: departments
   srch_expressions:
   - target_id: deptos
     expr_type: xpath
     srchex: .//*[@class="topmenu"]/ul/li/a[text()]/@href
+# - parser_type: HtmlXml
+  # parser_id: products_box
+  # srch_expressions:
+  # - target_id: titles_of_box_info
+    # expr_type: xpath
+    # srchex: .//*[@class="panel-title"]/a/text()
+  # - target_id: description_product_box
+    # expr_type: xpath
+    # srchex: .//*[@class="product-information"]/div[@class="product-information-text"]/text()
+  # - target_id: info_product_box
+    # expr_type: xpath
+    # srchex: .//*[@class="table"]//text()
   # - target_id: first_name
     # srchex: people[?last=='f'].first
 # - parser_type: JSON

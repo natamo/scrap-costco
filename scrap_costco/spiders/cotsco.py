@@ -1,13 +1,13 @@
+#  from scrapy.crawler import CrawlerProcess
 from scrapy.spiders import SitemapSpider
 from sbk_scraping.parser.factories import ParserFactory
 from sbk_scraping.utils import load_config_file
 import scrapy
-#  from scrapy.crawler import CrawlerProcess
 from scrap_costco.utils import get_logger
+from sbk_utils.data.processors import take_first
 
 
 logger = get_logger(__name__)
-
 
 class DeptosSpider(scrapy.Spider):
     name = 'deptos'
@@ -27,22 +27,23 @@ class DeptosSpider(scrapy.Spider):
     def parse(self, response):
         deptos_dict = self.parser.parse(data=response.text)
         deptos_list = deptos_dict["deptos"]
-        departments_clean = []
+        deptos_urls = []
 
         for depto in deptos_list:
             no_url = "javascript:void(0)"
             if (str(depto) != no_url):
-                departments_clean.append(depto)
-                print(depto)
-        print(len(departments_clean))
-        #  print(departments_clean)
+                absolute_url = response.urljoin(depto)
+                deptos_urls.append(absolute_url)
+                #  print(depto)
+        print(deptos_urls)
+        print(len(deptos_urls))
 
 
 class DeptosMapSpider(SitemapSpider):
     name = 'map_depto'
     sitemap_urls = ['https://www.costco.com.mx/robots.txt']
     sitemap_rules = [
-        ('/Joyeria-y-Relojes/Aretes/Aretes-de-Perlas', 'department'),
+        ('/Joyeria-y-Relojestes-de-Perlas', 'department'),
         ('/Joyeria-y-Relojes/Aretes', 'department_landing')
     ]
     url_list = []
@@ -52,35 +53,70 @@ class DeptosMapSpider(SitemapSpider):
 
     def department(self, response):
         self.url_list.append(response.url)
-        logger.info('LA URL DEL DEPTO ES: ', response.url)
+        print('LA URL DEL DEPTO ES: ', response.url)
         print(len(self.url_list))
 
     def department_landing(self, response):
         self.url_list_2.append(response.url)
-        logger.info('URL LANDING DEPTO: ', response.url)
+        print('URL LANDING DEPTO: ', response.url)
         print(len(self.url_list_2))
 
 
-class UrlsProductSpider(SitemapSpider):
-    name = 'url_depto'
-    sitemap_urls = ['https://www.costco.com.mx/robots.txt']
-    sitemap_rules = [
-        ('/Joyeria-y-Relojes/Aretes/Aretes-de-Perlas/', 'urls_products')
-    ]
-    sitemap_follow = ['/sitemap_mexico_product']
-    url_list = []
+class TestTestSpider(SitemapSpider):
+    name = 'test_test'
+    #  start_urls = ['https://www.costco.com.mx']
 
-    def urls_products(self, response):
-        self.url_list.append(response.url)
-        logger.info('LA URL DEL PRODUCTO ES: ', response.url)
-        print(len(self.url_list))
+    def __init__(self, category=None, *args, **kwargs):
+        super(TestTestSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [f'https://www.costco.com.mx/Electronicos/Pantallas-y-Proyectores/65-pulgadas-y-Mas/TCL-Pantalla-75-QLED-ANDROID-TV-4K/p/{category}']
+
+    def parse(self, response):
+        info = response.xpath(
+            './/*[@class="product-title-container hidden-md hidden-lg visible-tablet-landscape col-xs-12 top-title"]/h1[@class="product-name"]//text()'
+        ).extract()
+        logger.info(info)
+
+
+#  class UrlsProductSpider(SitemapSpider):
+    #  name = 'url_depto'
+    #  sitemap_urls = ['https://www.costco.com.mx/robots.txt']
+#
+    #  def __init__(self, category=None, *args, **kwargs):
+        #  category = f'/Joyeria-y-Relojes/Aretes/{category}'
+        #  super(UrlsProductSpider, self).__init__(*args, **kwargs)
+#
+    #  sitemap_rules = [__category__, 'urls_products']
+#
+    #  sitemap_follow = ['/sitemap_mexico_product']
+    #  url_list = []
+#
+    #  def urls_products(self, response):
+        #  self.url_list.append(response.url)
+        #  print('LA URL DEL PRODUCTO ES: ', response.url)
+        #  print(len(self.url_list))
+
+
+class TestSpider(scrapy.Spider):
+    name = 'test'
+    #  start_urls = ['https://www.costco.com.mx']
+
+    def __init__(self, category=None, *args, **kwargs):
+        super(TestSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [f'https://www.costco.com.mx/Electronicos/Pantallas-y-Proyectores/65-pulgadas-y-Mas/TCL-Pantalla-75-QLED-ANDROID-TV-4K/p/{category}']
+
+    def parse(self, response):
+        info = response.xpath(
+            './/*[@class="product-title-container hidden-md hidden-lg visible-tablet-landscape col-xs-12 top-title"]/h1[@class="product-name"]//text()'
+        ).extract()
+        logger.info(info)
 
 
 class ProductInfoSpider(SitemapSpider):
     name = 'products'
     sitemap_urls = ['https://www.costco.com.mx/robots.txt']
     sitemap_rules = [
-        ('/Joyeria-y-Relojes/Anillos/Anillos-de-Oro/', 'products_info'),
+        #  ('/Joyeria-y-Relojes', 'products_info'),
+        ('/Asadores-y-Hieleras/Asadores/', 'products_info'),
     ]
     sitemap_follow = ['/sitemap_mexico_product']
 
@@ -96,11 +132,43 @@ class ProductInfoSpider(SitemapSpider):
         )
 
     def products_info(self, response):
-        products_list = []
+        info_list = []
+        info_table = response.css('table, attrib, attrib-val')
+        for row in info_table:
+            info_list.append(row.css('td::text').extract())
+
         product = self.parser.parse(data=response.text)
-        products_list.append(product)
-        print(product)
-        print(len(products_list))
+        product["info_box"] = info_list
+        print("RESULTADO SCRAP", product)
+
+
+class PromotionSpider(SitemapSpider):
+    name = 'promotion_depto'
+    sitemap_urls = ['https://www.costco.com.mx/robots.txt']
+    sitemap_rules = [
+        ('Promo', 'department'),
+        ('Ahorros', 'department'),
+        ('Descuento', 'department'),
+        ('promo', 'department'),
+        ('ahorros', 'department'),
+        ('descuento', 'department'),
+    ]
+    url_list = []
+    #  url_list_2 = []
+    sitemap_follow = ['/sitemap_mexico_category',
+                      '/sitemap_mexico_categorylanding']
+
+    def department(self, response):
+        self.url_list.append(response.url)
+        print('LA URL DEL DEPTO ES: ', response.url)
+        print(len(self.url_list))
+
+    #  def department_landing(self, response):
+        #  self.url_list_2.append(response.url)
+        #  print('URL LANDING DEPTO: ', response.url)
+        #  print(len(self.url_list_2))
+
+    # Ahorros, Promo, descuento
 
 
 # ·········································································
@@ -117,6 +185,45 @@ class ProductInfoSpider(SitemapSpider):
 #  process.start
 
 
+###################
+        #  products_list = []
+        #  products_list.append(product)
+        #  print("RESULTADO SCRAP", product)
+        #  print(products_list)
+        #  name = product["product_name"]
+        #  print(name[0])
+        #  print(take_first(name))
+        #  price = product["product_price"]
+        #  print(take_first(price))
+        #  code = product["product_code"]
+        #  print(take_first(code))
+        #  print(product["box_description"])
+        #  print(product["box_table_descript"])
+
+        #  print(info_list)
+        #  info_list = []
+        #  info_table = response.css('table, attrib, attrib-val')
+        #  for row in info_table:
+            #  print(row.css('td::text').extract())
+
+
+
+        #  print(price)
+        #  print(len(products_list))
+
+        #  print("IMPRESION DE LIST ", info_list)
+
+        #  from scrapy.selector.unified import SelectorList
+        #  info = product["info"]
+        #  print(info)
+        #  info_str = SelectorList(info[0])
+        #  info_str = SelectorList(info)
+        #  print(type(info_str))
+        #  for row in info_str:
+            #  print(row.css('td::text').extract())
+#
+
+###################
 #  class CotscoSpider(SitemapSpider):
     #  name = 'cotsco'
     #  sitemap_urls = ['https://www.costco.com.mx/robots.txt']

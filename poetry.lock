@@ -801,7 +801,7 @@ reference = "pyseebak"
 
 [[package]]
 name = "sbk-scraping"
-version = "0.1.7"
+version = "0.1.8"
 description = ""
 category = "main"
 optional = false
@@ -824,7 +824,7 @@ reference = "pyseebak"
 
 [[package]]
 name = "sbk-utils"
-version = "0.1.4"
+version = "0.1.6"
 description = ""
 category = "main"
 optional = false
@@ -1432,12 +1432,12 @@ queuelib = [
     {file = "queuelib-1.6.2.tar.gz", hash = "sha256:4b207267f2642a8699a1f806045c56eb7ad1a85a10c0e249884580d139c2fcd2"},
 ]
 sbk-scraping = [
-    {file = "sbk-scraping-0.1.7.tar.gz", hash = "md5:d471b0d957538591781df14e6b2a893b"},
-    {file = "sbk_scraping-0.1.7-py3-none-any.whl", hash = "md5:72269d9263b5adfb464621d4619eef30"},
+    {file = "sbk-scraping-0.1.8.tar.gz", hash = "md5:ddffff9ff61372ba5b6e31d4ff23841f"},
+    {file = "sbk_scraping-0.1.8-py3-none-any.whl", hash = "md5:330b111280e8afafdb675ea72c3173e5"},
 ]
 sbk-utils = [
-    {file = "sbk-utils-0.1.4.tar.gz", hash = "md5:fc7324ca82bea27e185f74ddde33be8c"},
-    {file = "sbk_utils-0.1.4-py3-none-any.whl", hash = "md5:6f7e0829e3f207c2336537f3394ae410"},
+    {file = "sbk-utils-0.1.6.tar.gz", hash = "md5:aa977150d903f6041a409392a3f528d1"},
+    {file = "sbk_utils-0.1.6-py3-none-any.whl", hash = "md5:afcc80d5039b4df11126851ea825e218"},
 ]
 scrapy = [
     {file = "Scrapy-2.5.1-py2.py3-none-any.whl", hash = "sha256:1a9a36970004950ee3c519a14c4db945f9d9a63fecb3d593dddcda477331dde9"},
